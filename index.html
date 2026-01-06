@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Shoes Stock</title>
+    <style>
+        :root {
+            --background: #0a0a0a;
+            --foreground: #ededed;
+            --primary: #f59e0b;
+            /* Amber/Orange for emphasis */
+            --primary-hover: #d97706;
+            --secondary: #262626;
+            --accent: #3b82f6;
+            /* Blue for info/action */
+            --success: #10b981;
+            --error: #ef4444;
+            --border: #404040;
+            --card-bg: #171717;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #0a0a0a;
+                --foreground: #ededed;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body {
+            max-width: 100vw;
+            overflow-x: hidden;
+            font-family: var(--font-sans);
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        /* Utilities */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--foreground);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: #333;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .imageWrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 75%;
+            /* 4:3 Aspect Ratio */
+            overflow: hidden;
+            background-color: #202020;
+        }
+
+        .image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .image {
+            transform: scale(1.05);
+        }
+
+        .content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .brand {
+            font-size: 0.875rem;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .price {
+            font-size: 1.125rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: auto;
+        }
+
+        .badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--primary);
+            color: black;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+
+        /* Navbar Styles from Module */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), #ef4444);
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.05em;
+        }
+
+        .links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .link {
+            font-weight: 500;
+            color: var(--foreground);
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .link:hover {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(https://images.unsplash.com/photo-1556906781-9a412961d28c?auto=format&fit=crop&w=1920&q=80);
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            color: white;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-inline: auto;
+        }
+
+        /* Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <a href="/" class="logo">ADMIN SHOES</a>
+            <div class="links">
+                <a href="/" class="link">Home</a>
+                <a href="/shop" class="link">Shop</a>
+                <a href="/cart" class="link">Cart</a>
+                <a href="/admin" class="link">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>
+                    WALK THE <br /> <span style="color: var(--primary)">EXTRA MILE.</span>
+                </h1>
+                <p>
+                    Discover the latest collection of premium sneakers. Designed for comfort, engineered for
+                    performance.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <a href="/shop" class="btn btn-primary">Shop Now</a>
+                    <a href="#featured" class="btn btn-secondary"
+                        style="background: transparent; border-color: white; color: white;">View Collection</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Section -->
+        <section id="featured" class="container" style="margin-bottom: 4rem;">
+            <div style="display: flex; justify-content: space-between; align-items: end; margin-bottom: 2rem;">
+                <div>
+                    <span
+                        style="color: var(--primary); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Selection</span>
+                    <h2 style="font-size: 2.5rem; font-weight: 700;">Featured Drops</h2>
+                </div>
+                <a href="/shop" style="border-bottom: 1px solid var(--primary); padding-bottom: 2px;">View All
+                    &rarr;</a>
+            </div>
+
+            <div class="product-grid">
+
+                <!-- Product 1: Nike -->
+                <a href="#" class="card">
+                    <div class="imageWrapper">
+                        <!-- Badge example: <span class="badge">Low Stock</span> -->
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
+                            alt="Air Max 90" class="image">
+                    </div>
+                    <div class="content">
+                        <span class="brand">Nike</span>
+                        <h3 class="name">Air Max 90</h3>
+                        <span class="price">$129.99</span>
+                    </div>
+                </a>
+
+                <!-- Product 2: Adidas -->
+                <a href="#" class="card">
+                    <div class="imageWrapper">
+                        <img src="https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?auto=format&fit=crop&w=800&q=80"
+                            alt="Ultraboost 22" class="image">
+                    </div>
+                    <div class="content">
+                        <span class="brand">Adidas</span>
+                        <h3 class="name">Ultraboost 22</h3>
+                        <span class="price">$189.99</span>
+                    </div>
+                </a>
+
+                <!-- Product 3: Jordan -->
+                <a href="#" class="card">
+                    <div class="imageWrapper">
+                        <span class="badge">Low Stock</span>
+                        <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80"
+                            alt="Jordan 1 High" class="image">
+                    </div>
+                    <div class="content">
+                        <span class="brand">Jordan</span>
+                        <h3 class="name">Jordan 1 High</h3>
+                        <span class="price">$249.99</span>
+                    </div>
+                </a>
+
+                <!-- Product 4: Converse -->
+                <a href="#" class="card">
+                    <div class="imageWrapper">
+                        <img src="https://images.unsplash.com/photo-1607522370275-f14bc3c7433c?auto=format&fit=crop&w=800&q=80"
+                            alt="Chuck 70" class="image">
+                    </div>
+                    <div class="content">
+                        <span class="brand">Converse</span>
+                        <h3 class="name">Chuck 70</h3>
+                        <span class="price">$89.99</span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+    </main>
+
+    <footer
+        style="padding: 2rem; text-align: center; border-top: 1px solid var(--border); color: #666; margin-top: 4rem;">
+        &copy; 2026 Admin Shoes Stock. All rights reserved.
+    </footer>
+
+</body>
+
+</html>
